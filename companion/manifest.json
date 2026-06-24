@@ -1,0 +1,37 @@
+{
+  "$schema": "../node_modules/@companion-module/base/assets/manifest.schema.json",
+  "type": "connection",
+  "id": "showrevue-showrevue",
+  "name": "ShowRevue",
+  "shortname": "showrevue",
+  "description": "Control ShowRevue transport, looping, messaging, and masking over OSC, with live state feedback.",
+  "version": "0.4.0",
+  "license": "MIT",
+  "repository": "git+https://github.com/Deanbau/RevuShow.git",
+  "bugs": "https://github.com/Deanbau/RevuShow/issues",
+  "maintainers": [
+    {
+      "name": "Deanbau",
+      "email": "39572328+Deanbau@users.noreply.github.com",
+      "github": "Deanbau"
+    }
+  ],
+  "runtime": {
+    "type": "node22",
+    "api": "nodejs-ipc",
+    "apiVersion": "2.0.4",
+    "entrypoint": "../src/main.js"
+  },
+  "legacyIds": ["revueshow-revueshow"],
+  "manufacturer": "ShowRevue",
+  "products": [
+    "ShowRevue"
+  ],
+  "keywords": [
+    "osc",
+    "theatre",
+    "transport",
+    "messaging",
+    "stagedisplay"
+  ]
+}

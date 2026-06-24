@@ -1,0 +1,32 @@
+module.exports = function (self) {
+	self.setVariableDefinitions({
+		target_host: { name: 'Configured target host' },
+		target_port: { name: 'Configured target port' },
+		last_command: { name: 'Last OSC command sent' },
+		last_message_preset: { name: 'Last message preset sent' },
+		last_message_text: { name: 'Last custom message text sent' },
+		last_mask_command: { name: 'Last mask command sent' },
+		// Live state published BACK by ShowRevue over OSC (/showrevue/state/*).
+		recording: { name: 'Recording (1/0)' },
+		monitor_only: { name: 'Monitor Only kill switch (1/0)' },
+		outputs_armed: { name: 'Outputs armed (1/0)' },
+		timecode: { name: 'Timecode (HH:MM:SS)' },
+		fps: { name: 'Timecode fps' },
+		cue_number: { name: 'Current cue number' },
+		cue_label: { name: 'Current cue label' },
+		show_name: { name: 'Show name' },
+		time_since_cue: { name: 'Seconds since current LX cue' },
+		ltc_status: { name: 'LTC status (locked / NO LTC / …)' },
+		show_phase: { name: 'Show State phase (PRESHOW / ACT 1 / …)' },
+		show_timer: { name: 'Show State timer text' },
+		session_name: { name: 'Session name (e.g. Show 1)' },
+		session_type: { name: 'Session type (Show / Tech / …)' },
+		streaming: { name: 'RTMP streaming (1/0)' },
+		ndi_sending: { name: 'NDI output (1/0)' },
+		note_count: { name: 'Notes taken this session' },
+		next_curtain: { name: 'Next curtain time' },
+		source_health: { name: 'Camera/source health (ok / no signal / off)' },
+		disk_free: { name: 'Free space on recording volume (GB)' },
+		curtain_countdown: { name: 'Countdown to next curtain (preshow only)' },
+	})
+}
