@@ -14,23 +14,32 @@ This module covers the current OSC control surface implemented in `ShowRevue/Sho
 
 ## Configuration
 
-Point the module at the ShowRevue machine and OSC Control port.
+Point the module at the ShowRevue machine.
 
-- Host: ShowRevue IP or hostname
-- Port: ShowRevue OSC Control port, default `8001`
+- **Host**: ShowRevue IP or hostname
+- **Command port**: ShowRevue OSC Control port, default `8001`
+- **Feedback**: enable **Send feedback to Companion** in ShowRevue → **Preferences → Companion** (default port `8002`)
 
-## Feedback
+## Feedback (two-way)
 
-This first pass is send-only.
+The module is **fully two-way**. ShowRevue publishes its live state back to Companion over OSC
+(`/showrevue/state/*`) on a separate outbound path — turn on **Send feedback to Companion** in
+ShowRevue → **Preferences → Companion**. (Same machine? The command port `8001` and the feedback
+port `8002` must differ.)
 
-ShowRevue currently accepts OSC control but does not emit authoritative OSC state back for playback, record state, masking, or active message presets. Because of that, true Companion feedback would need ShowRevue to publish state on a separate outbound path first.
+**Variables** (use in button text): `recording`, `timecode`, `fps`, `cue_number`, `cue_label`,
+`show_name`, `time_since_cue`, `ltc_status`, `show_phase`, `show_timer`, `session_name`,
+`session_type`, `streaming`, `ndi_sending`, `note_count`, `next_curtain`, `source_health`,
+`disk_free`, `curtain_countdown`, `monitor_only`, `outputs_armed`.
 
-The module does expose "last command sent" variables so you can reference the last Companion-triggered action in labels if useful, but those are not device-state feedbacks.
+**Feedbacks** (boolean, for button colour/style): **Recording**, **Source problem**, **Monitor
+Only**, **Outputs armed** — plus ready-made Status presets that wire these up.
 
 ## Build
 
 ```bash
-yarn install
-yarn package
+./node_modules/.bin/companion-module-build
 ```
+
+(Use the local binary, **not** `yarn package` — it collides with the yarn-4 builtin.)
 
