@@ -90,13 +90,16 @@ module.exports = function (self) {
 					type: 'number',
 					label: 'Seconds',
 					default: 5,
-					min: 0,
+					min: 0.1,
 					max: 3600,
 					step: 0.1,
 				},
 			],
 			callback: async (event) => {
-				const seconds = Math.abs(Number(event.options.seconds) || 5)
+				// `Number(x) || 5` turned a configured 0 into 5 (0 is falsy); guard on a
+				// real positive number instead.
+				const n = Number(event.options.seconds)
+				const seconds = Number.isFinite(n) && n > 0 ? Math.abs(n) : 5
 				await self.sendCommand('/showrevue/forward', [seconds], `Forward ${seconds}s`)
 			},
 		},
@@ -108,13 +111,16 @@ module.exports = function (self) {
 					type: 'number',
 					label: 'Seconds',
 					default: 5,
-					min: 0,
+					min: 0.1,
 					max: 3600,
 					step: 0.1,
 				},
 			],
 			callback: async (event) => {
-				const seconds = Math.abs(Number(event.options.seconds) || 5)
+				// `Number(x) || 5` turned a configured 0 into 5 (0 is falsy); guard on a
+				// real positive number instead.
+				const n = Number(event.options.seconds)
+				const seconds = Number.isFinite(n) && n > 0 ? Math.abs(n) : 5
 				await self.sendCommand('/showrevue/back', [seconds], `Back ${seconds}s`)
 			},
 		},
