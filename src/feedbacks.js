@@ -7,7 +7,7 @@ module.exports = function (self) {
 		recording: {
 			name: 'Recording',
 			type: 'boolean',
-			label: 'When ShowRevue is recording',
+			description: 'When ShowRevue is recording',
 			defaultStyle: {
 				bgcolor: combineRgb(200, 0, 0),
 				color: combineRgb(255, 255, 255),
@@ -20,7 +20,7 @@ module.exports = function (self) {
 		source_problem: {
 			name: 'Source problem',
 			type: 'boolean',
-			label: 'When the camera/source is not OK (no signal / off)',
+			description: 'When the camera/source is not OK (no signal / off)',
 			defaultStyle: {
 				bgcolor: combineRgb(200, 120, 0),
 				color: combineRgb(255, 255, 255),
@@ -36,7 +36,7 @@ module.exports = function (self) {
 		monitor_only: {
 			name: 'Monitor Only',
 			type: 'boolean',
-			label: 'When Monitor Only (kill switch) is engaged',
+			description: 'When Monitor Only (kill switch) is engaged',
 			defaultStyle: {
 				bgcolor: combineRgb(220, 120, 0),
 				color: combineRgb(0, 0, 0),
@@ -48,7 +48,7 @@ module.exports = function (self) {
 		outputs_armed: {
 			name: 'Outputs armed',
 			type: 'boolean',
-			label: 'When outputs are armed (fireback enabled)',
+			description: 'When outputs are armed (fireback enabled)',
 			defaultStyle: {
 				bgcolor: combineRgb(200, 0, 0),
 				color: combineRgb(255, 255, 255),

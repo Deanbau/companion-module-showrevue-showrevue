@@ -11,6 +11,8 @@ class ModuleInstance extends InstanceBase {
 		this.socket = null
 		this.listenSocket = null
 		this.listenPort = null
+		this.listenRetryTimer = null
+		this.destroyed = false
 		// Live state pushed back by ShowRevue over OSC (/showrevue/state/*).
 		this.appState = {
 			recording: false, timecode: '', fps: '', cue_number: '', cue_label: '', show_name: '',
@@ -33,6 +35,7 @@ class ModuleInstance extends InstanceBase {
 
 	async init(config) {
 		this.config = config
+		this.destroyed = false
 		this.sentState = this.createInitialSentState()
 
 		this.ensureSocket()
@@ -46,13 +49,27 @@ class ModuleInstance extends InstanceBase {
 	}
 
 	async destroy() {
+		this.destroyed = true
+		if (this.listenRetryTimer) {
+			clearTimeout(this.listenRetryTimer)
+			this.listenRetryTimer = null
+		}
 		if (this.socket) {
-			this.socket.close()
+			try {
+				this.socket.close()
+			} catch {
+				// ignore
+			}
 			this.socket = null
 		}
 		if (this.listenSocket) {
-			this.listenSocket.close()
+			try {
+				this.listenSocket.close()
+			} catch {
+				// ignore
+			}
 			this.listenSocket = null
+			this.listenPort = null
 		}
 	}
 
@@ -136,6 +153,15 @@ class ModuleInstance extends InstanceBase {
 			return
 		}
 
+		const feedbackPort = Number(this.config.feedbackPort)
+		if (
+			this.config.feedbackPort &&
+			(!Number.isInteger(feedbackPort) || feedbackPort <= 0 || feedbackPort > 65535)
+		) {
+			this.updateStatus(InstanceStatus.BadConfig, 'Enter a valid feedback listen port')
+			return
+		}
+
 		this.updateStatus(InstanceStatus.Ok)
 	}
 
@@ -183,15 +209,41 @@ class ModuleInstance extends InstanceBase {
 				// ignore
 			}
 			this.listenSocket = null
+			this.listenPort = null
+		}
+		if (this.listenRetryTimer) {
+			clearTimeout(this.listenRetryTimer)
+			this.listenRetryTimer = null
 		}
 		const sock = require('node:dgram').createSocket('udp4')
 		sock.on('error', (error) => {
+			// A bind failure (e.g. EADDRINUSE — a second ShowRevue instance already owns
+			// this feedback port) fires here, NOT in the bind callback. Previously this
+			// only logged, leaving a dead socket while status stayed "Ok" and no feedback
+			// ever arrived. Tear it down, surface a warning, and retry.
 			this.log('error', `Feedback listener error: ${error.message}`)
+			try {
+				sock.close()
+			} catch {
+				// ignore
+			}
+			if (this.listenSocket === sock) {
+				this.listenSocket = null
+				this.listenPort = null
+			}
+			this.updateStatus(InstanceStatus.UnknownWarning, `Feedback listener failed: ${error.message}`)
+			if (!this.destroyed && !this.listenRetryTimer) {
+				this.listenRetryTimer = setTimeout(() => {
+					this.listenRetryTimer = null
+					this.ensureListenSocket()
+				}, 5000)
+			}
 		})
 		sock.on('message', (msg) => this.handleStateMessage(msg))
 		sock.bind(port, () => {
 			this.listenPort = port
 			this.log('info', `Listening for ShowRevue state feedback on UDP ${port}`)
+			this.refreshStatus()
 		})
 		this.listenSocket = sock
 	}
@@ -230,6 +282,14 @@ class ModuleInstance extends InstanceBase {
 		this.socket.on('error', (error) => {
 			this.log('error', `OSC socket error: ${error.message}`)
 			this.updateStatus(InstanceStatus.ConnectionFailure, error.message)
+			// Drop the dead socket so the next sendCommand recreates it — otherwise
+			// every later send rejects "Socket is closed" until the instance restarts.
+			try {
+				this.socket && this.socket.close()
+			} catch {
+				// ignore
+			}
+			this.socket = null
 		})
 	}
 

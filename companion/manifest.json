@@ -7,8 +7,8 @@
   "description": "Control ShowRevue transport, looping, messaging, and masking over OSC, with live state feedback.",
   "version": "0.4.2",
   "license": "MIT",
-  "repository": "git+https://github.com/Deanbau/RevuShow.git",
-  "bugs": "https://github.com/Deanbau/RevuShow/issues",
+  "repository": "git+https://github.com/deanbau/companion-module-showrevue-showrevue.git",
+  "bugs": "https://github.com/deanbau/companion-module-showrevue-showrevue/issues",
   "maintainers": [
     {
       "name": "Deanbau",

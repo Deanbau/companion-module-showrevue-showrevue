@@ -10,7 +10,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Deanbau/RevuShow.git"
+    "url": "git+https://github.com/deanbau/companion-module-showrevue-showrevue.git"
+  },
+  "bugs": {
+    "url": "https://github.com/deanbau/companion-module-showrevue-showrevue/issues"
   },
   "engines": {
     "node": "^22.20",
