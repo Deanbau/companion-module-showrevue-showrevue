@@ -1,4 +1,13 @@
-const { buildMessagePresetChoices, findMessagePreset } = require('./constants')
+const { buildMessagePresetChoices, findMessagePreset, WIDGET_KINDS } = require('./constants')
+
+// Session types by 1-based index — match SessionType.allCases order in the ShowRevue app.
+// The index survives renames, so the choice does not depend on the operator's custom names.
+const SESSION_TYPE_CHOICES = [
+	{ id: '1', label: '1: Off Venue Rehearsal' },
+	{ id: '2', label: '2: Tech Rehearsal' },
+	{ id: '3', label: '3: Dress Rehearsal' },
+	{ id: '4', label: '4: Show' },
+]
 
 // Note departments — match NoteCategory.rawValue in the ShowRevue app.
 const NOTE_DEPARTMENTS = [
@@ -68,6 +77,18 @@ module.exports = function (self) {
 			name: 'Navigation: Previous Cue',
 			callback: async () => {
 				await self.sendCommand('/showrevue/previous/cue', [], 'Previous Cue')
+			},
+		},
+		next_recording: {
+			name: 'Navigation: Next Recording',
+			callback: async () => {
+				await self.sendCommand('/showrevue/next/recording', [], 'Next Recording')
+			},
+		},
+		previous_recording: {
+			name: 'Navigation: Previous Recording',
+			callback: async () => {
+				await self.sendCommand('/showrevue/previous/recording', [], 'Previous Recording')
 			},
 		},
 		next_timecode_segment: {
@@ -309,6 +330,62 @@ module.exports = function (self) {
 				})
 			},
 		},
+		widget_visibility: {
+			name: 'Overlay widget: Show / Hide / Toggle',
+			options: [
+				{
+					id: 'kind',
+					type: 'dropdown',
+					label: 'Widget',
+					default: 'cueNumber',
+					choices: WIDGET_KINDS.map((w) => ({ id: w.id, label: w.label })),
+					allowCustom: true,
+					tooltip: 'Pick a widget kind, or type the OSC ID set in the layout inspector.',
+				},
+				{
+					id: 'mode',
+					type: 'dropdown',
+					label: 'Action',
+					default: 'toggle',
+					choices: [
+						{ id: 'show', label: 'Show' },
+						{ id: 'hide', label: 'Hide' },
+						{ id: 'toggle', label: 'Toggle' },
+					],
+				},
+			],
+			callback: async (event) => {
+				const kind = String(event.options.kind || '').trim()
+				const mode = event.options.mode || 'toggle'
+				if (!kind) return
+				await self.sendCommand(`/showrevue/widget/${kind}/${mode}`, [], `Widget ${kind} ${mode}`)
+			},
+		},
+		widget_color: {
+			name: 'Overlay widget: Set colour',
+			options: [
+				{
+					id: 'kind',
+					type: 'dropdown',
+					label: 'Widget',
+					default: 'cueNumber',
+					choices: WIDGET_KINDS.map((w) => ({ id: w.id, label: w.label })),
+					allowCustom: true,
+				},
+				{
+					id: 'color',
+					type: 'textinput',
+					label: 'Colour (hex, or "none" to reset to white)',
+					default: '#ff4545',
+				},
+			],
+			callback: async (event) => {
+				const kind = String(event.options.kind || '').trim()
+				const color = String(event.options.color || '').trim() || 'none'
+				if (!kind) return
+				await self.sendCommand(`/showrevue/widget/${kind}/color`, [{ type: 's', value: color }], `Widget ${kind} colour ${color}`)
+			},
+		},
 		mask_toggle: {
 			name: 'Mask: Toggle',
 			callback: async () => {
@@ -338,7 +415,7 @@ module.exports = function (self) {
 			callback: async (event) => {
 				const text = String(event.options.text ?? '').trim()
 				if (!text) {
-					self.log('warn', 'Note action ignored — empty text')
+					self.log('warn', 'Note action ignored: empty text')
 					return
 				}
 				const dept = String(event.options.department ?? 'lighting').trim() || 'lighting'
@@ -406,10 +483,15 @@ module.exports = function (self) {
 		},
 		show_state_interval: {
 			name: 'Show State: Interval',
-			options: [{ id: 'number', type: 'number', label: 'Interval number', default: 1, min: 1, max: 3, step: 1 }],
+			options: [
+					{ id: 'number', type: 'number', label: 'Interval number', default: 1, min: 1, max: 3, step: 1 },
+					{ id: 'duration', type: 'textinput', label: 'Planned length in seconds (blank = no countdown)', default: '', useVariables: true },
+				],
 			callback: async (event) => {
 				const n = parseOptionalNumber(event.options.number) ?? 1
-				await self.sendCommand('/showrevue/showstate/interval', [n], `Show State: Interval ${n}`)
+				const duration = parseOptionalNumber(event.options.duration)
+					const args = duration !== null ? [n, duration] : [n]
+					await self.sendCommand('/showrevue/showstate/interval', args, `Show State: Interval ${n}`)
 			},
 		},
 		show_state_finished: {
@@ -455,7 +537,7 @@ module.exports = function (self) {
 					label: 'Source',
 					default: 'showrevuelive',
 					choices: [
-						{ id: 'showrevuelive', label: 'ShowRevueLive (camera + overlay)' },
+						{ id: 'showrevuelive', label: 'Stage Display (camera + overlay)' },
 						{ id: 'gui', label: 'GUI Mirror (live / playback)' },
 					],
 				},
@@ -474,8 +556,8 @@ module.exports = function (self) {
 					label: 'State',
 					default: 'toggle',
 					choices: [
-						{ id: 'on', label: 'On — kill all outputs' },
-						{ id: 'off', label: 'Off — allow outputs' },
+						{ id: 'on', label: 'On: kill all outputs' },
+						{ id: 'off', label: 'Off: allow outputs' },
 						{ id: 'toggle', label: 'Toggle' },
 					],
 				},
@@ -485,7 +567,41 @@ module.exports = function (self) {
 				await self.sendCommand(`/showrevue/monitor/${s}`, [], `Monitor Only ${s}`)
 			},
 		},
-		arm_outputs: {
+		session_type: {
+				name: 'Session: Set type',
+				options: [
+					{
+						id: 'type',
+						type: 'dropdown',
+						label: 'Session type',
+						default: '2',
+						choices: SESSION_TYPE_CHOICES,
+						allowCustom: true,
+						tooltip: 'Pick a type, or type a custom name as it appears in Project Settings.',
+					},
+				],
+				callback: async (event) => {
+					const type = String(event.options.type ?? '').trim()
+					if (!type) return
+					await self.sendCommand('/showrevue/session/type', [type], `Session type ${type}`)
+				},
+			},
+			session_number: {
+				name: 'Session: Set next number',
+				options: [{ id: 'number', type: 'number', label: 'Next number', default: 1, min: 1, max: 999, step: 1 }],
+				callback: async (event) => {
+					const n = Math.max(1, Math.trunc(parseOptionalNumber(event.options.number) ?? 1))
+					await self.sendCommand('/showrevue/session/number', [n], `Session next number ${n}`)
+				},
+			},
+			session_new: {
+				name: 'Session: Start new session',
+				options: [],
+				callback: async () => {
+					await self.sendCommand('/showrevue/session/new', [], 'Start new session')
+				},
+			},
+			arm_outputs: {
 			name: 'Safety: Arm outputs (fireback)',
 			options: [
 				{
@@ -503,6 +619,26 @@ module.exports = function (self) {
 			callback: async (event) => {
 				const s = ['on', 'off', 'toggle'].includes(event.options.state) ? event.options.state : 'toggle'
 				await self.sendCommand(`/showrevue/arm/${s}`, [], `Arm outputs ${s}`)
+			},
+		},
+		tc_trigger: {
+			name: 'Record When Timecode Runs (arm)',
+			options: [
+				{
+					id: 'state',
+					type: 'dropdown',
+					label: 'State',
+					default: 'toggle',
+					choices: [
+						{ id: 'on', label: 'Arm' },
+						{ id: 'off', label: 'Disarm' },
+						{ id: 'toggle', label: 'Toggle' },
+					],
+				},
+			],
+			callback: async (event) => {
+				const s = ['on', 'off', 'toggle'].includes(event.options.state) ? event.options.state : 'toggle'
+				await self.sendCommand(`/showrevue/tctrigger/${s}`, [], `Record When Timecode Runs ${s}`)
 			},
 		},
 	})

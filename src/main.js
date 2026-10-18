@@ -17,7 +17,7 @@ class ModuleInstance extends InstanceBase {
 			time_since_cue: '', ltc_status: '', show_phase: '', show_timer: '',
 			session_name: '', session_type: '', streaming: '0', ndi_sending: '0',
 			note_count: '0', next_curtain: '', source_health: 'off', disk_free: '',
-			curtain_countdown: '',
+			curtain_countdown: '', audio_silent_seconds: '0', tc_trigger_state: '',
 		}
 		this.sentState = this.createInitialSentState()
 	}
@@ -150,6 +150,8 @@ class ModuleInstance extends InstanceBase {
 			recording: this.appState.recording ? '1' : '0',
 			monitor_only: this.appState.monitor_only ? '1' : '0',
 			outputs_armed: this.appState.outputs_armed ? '1' : '0',
+			tc_trigger_armed: this.appState.tc_trigger_armed ? '1' : '0',
+			tc_trigger_state: this.appState.tc_trigger_state,
 			timecode: this.appState.timecode,
 			fps: this.appState.fps,
 			cue_number: this.appState.cue_number,
@@ -168,6 +170,7 @@ class ModuleInstance extends InstanceBase {
 			source_health: this.appState.source_health,
 			disk_free: this.appState.disk_free,
 			curtain_countdown: this.appState.curtain_countdown,
+				audio_silent_seconds: this.appState.audio_silent_seconds,
 		})
 	}
 
@@ -204,13 +207,13 @@ class ModuleInstance extends InstanceBase {
 		const raw = msg.args.length ? msg.args[0] : ''
 		// Generic: store any /showrevue/state/<key> ShowRevue sends. Keys with a
 		// matching variable definition surface in Companion; the rest are kept too.
-		if (key === 'recording' || key === 'monitor_only' || key === 'outputs_armed') {
+		if (key === 'recording' || key === 'monitor_only' || key === 'outputs_armed' || key === 'tc_trigger_armed') {
 			this.appState[key] = raw === '1' || raw === 1 || raw === true
 		} else {
 			this.appState[key] = String(raw)
 		}
 		this.refreshVariables()
-		this.checkFeedbacks('recording', 'source_problem', 'monitor_only', 'outputs_armed')
+		this.checkFeedbacks('recording', 'source_problem', 'monitor_only', 'outputs_armed', 'tc_trigger_armed', 'tc_trigger_state', 'ltc_locked', 'show_phase', 'streaming', 'ndi_sending', 'audio_silent', 'disk_low')
 	}
 
 	recordSentState(update) {

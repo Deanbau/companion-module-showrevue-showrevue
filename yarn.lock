@@ -527,9 +527,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"companion-module-revueshow-revueshow@workspace:.":
+"companion-module-showrevue-showrevue@workspace:.":
   version: 0.0.0-use.local
-  resolution: "companion-module-revueshow-revueshow@workspace:."
+  resolution: "companion-module-showrevue-showrevue@workspace:."
   dependencies:
     "@companion-module/base": "npm:~2.0.4"
     "@companion-module/tools": "npm:^3.0.1"

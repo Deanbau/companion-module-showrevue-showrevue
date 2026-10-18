@@ -4,8 +4,8 @@
   "id": "showrevue-showrevue",
   "name": "ShowRevue",
   "shortname": "showrevue",
-  "description": "Control ShowRevue transport, looping, messaging, and masking over OSC, with live state feedback.",
-  "version": "0.4.2",
+  "description": "Control ShowRevue transport, looping, messaging, masking and overlay widgets over OSC, with live state feedback.",
+  "version": "0.8.1",
   "license": "MIT",
   "repository": "git+https://github.com/Deanbau/RevuShow.git",
   "bugs": "https://github.com/Deanbau/RevuShow/issues",
@@ -22,7 +22,9 @@
     "apiVersion": "2.0.4",
     "entrypoint": "../src/main.js"
   },
-  "legacyIds": ["revueshow-revueshow"],
+  "legacyIds": [
+    "revueshow-revueshow"
+  ],
   "manufacturer": "ShowRevue",
   "products": [
     "ShowRevue"
