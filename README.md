@@ -2,11 +2,13 @@
 
 Bitfocus Companion module for controlling ShowRevue over its OSC remote-control port.
 
-Version 0.8.1 covers the OSC control surface in `ShowRevue/ShowRevue/Managers/OSCManager.swift`:
+Version 1.0.0 covers the OSC control surface in `ShowRevue/ShowRevue/Managers/OSCManager.swift`:
 
 - Transport: record, stop, play, pause
 - Navigation: next/previous cue, next/previous timecode segment, next/previous frame, forward/back, next/previous recording
 - Loop control: set/go loop in/out, enable/disable/toggle/stop/clear loop
+- Timeline and view (ShowRevue 1.0 RC 3 or later): zoom the Playback timeline in, out or to fit, and go back to the Live view without recording
+- Scrubbing: step frames while a button is held, and dial presets for frame, cue and timeline zoom on a Stream Deck+ or other rotary surface
 - Stage Display messaging: custom message set/clear, preset trigger, preset toggle
 - Stage Display masking: on, off, toggle
 - NDI output: set source (Stage Display / GUI Mirror)

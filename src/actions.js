@@ -468,6 +468,59 @@ module.exports = function (self) {
 			options: [],
 			callback: async () => { await self.sendCommand('/showrevue/timewarp/off', [], 'TimeWarp Exit') },
 		},
+		go_live: {
+			name: 'View: Go to Live view (no recording)',
+			description: 'Leaves TimeWarp, or takes Playback back to the Live view. Never starts a take. Needs ShowRevue 1.0 RC 3 or later.',
+			options: [],
+			callback: async () => { await self.sendCommand('/showrevue/live', [], 'Go to Live view') },
+		},
+		timeline_zoom_in: {
+			name: 'Timeline: Zoom in',
+			description: 'Zooms the Playback timeline in around the playhead. Needs ShowRevue 1.0 RC 3 or later.',
+			options: [],
+			callback: async () => { await self.sendCommand('/showrevue/zoom/in', [], 'Timeline Zoom In') },
+		},
+		timeline_zoom_out: {
+			name: 'Timeline: Zoom out',
+			description: 'Zooms the Playback timeline out. Needs ShowRevue 1.0 RC 3 or later.',
+			options: [],
+			callback: async () => { await self.sendCommand('/showrevue/zoom/out', [], 'Timeline Zoom Out') },
+		},
+		timeline_zoom_fit: {
+			name: 'Timeline: Fit whole recording',
+			description: 'Shows the whole recording in the Playback timeline. Needs ShowRevue 1.0 RC 3 or later.',
+			options: [],
+			callback: async () => { await self.sendCommand('/showrevue/zoom/fit', [], 'Timeline Zoom Fit') },
+		},
+		frame_hold: {
+			name: 'Navigation: Step frames while held',
+			description:
+				'Put this on the button DOWN actions and "Navigation: Stop stepping frames" on the button UP actions. It steps one frame straight away, then keeps stepping at the rate below until you let go (it also stops itself after 30 seconds).',
+			options: [
+				{
+					type: 'dropdown',
+					id: 'direction',
+					label: 'Direction',
+					default: 'next',
+					choices: [
+						{ id: 'next', label: 'Forward' },
+						{ id: 'previous', label: 'Backward' },
+					],
+				},
+				{ type: 'number', id: 'rate', label: 'Frames per second', default: 12, min: 1, max: 30 },
+			],
+			callback: async (event) => {
+				self.frameHold.start(event.options.direction, event.options.rate)
+			},
+		},
+		frame_hold_stop: {
+			name: 'Navigation: Stop stepping frames',
+			description: 'Use on the button UP actions of "Step frames while held".',
+			options: [],
+			callback: async () => {
+				self.frameHold.stop()
+			},
+		},
 		show_state_preshow: {
 			name: 'Show State: Preshow',
 			options: [],

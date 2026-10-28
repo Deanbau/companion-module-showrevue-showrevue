@@ -5,10 +5,13 @@ const UpdateActions = require('./actions')
 const UpdateFeedbacks = require('./feedbacks')
 const UpdatePresets = require('./presets')
 const UpdateVariableDefinitions = require('./variables')
+const { createFrameHold } = require('./frameHold')
+
 class ModuleInstance extends InstanceBase {
 	constructor(internal) {
 		super(internal)
 		this.socket = null
+		this.frameHold = createFrameHold((address, args, summary) => this.sendCommand(address, args, summary))
 		this.listenSocket = null
 		this.listenPort = null
 		// Live state pushed back by ShowRevue over OSC (/showrevue/state/*).
@@ -46,6 +49,7 @@ class ModuleInstance extends InstanceBase {
 	}
 
 	async destroy() {
+		this.frameHold.stop()
 		if (this.socket) {
 			this.socket.close()
 			this.socket = null

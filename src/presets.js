@@ -132,6 +132,34 @@ module.exports = function (self) {
 		['loop_clear', buildButtonPreset('Clear Loop', 'LOOP\nCLEAR', '#9a3412', 'clear_loop', {}, 'clear_loop')],
 	])
 
+	// ── Timeline, view and scrubbing ────────────────────────────
+	// A dial preset has rotate actions, so it needs a surface with a rotary (Stream Deck+, Loupedeck). Pressing the
+	// dial runs the press action. The held-button presets step frames while pressed and stop on release.
+	const dial = (name, text, bg, left, right, press = 'pause') => {
+		const p = buildButtonPreset(name, text, bg, press)
+		p.steps[0].rotate_left = [{ actionId: left, options: {} }]
+		p.steps[0].rotate_right = [{ actionId: right, options: {} }]
+		return p
+	}
+	const holdFrames = (name, text, bg, direction) => {
+		const p = buildButtonPreset(name, text, bg, 'frame_hold', { direction, rate: 12 })
+		p.steps[0].up = [{ actionId: 'frame_hold_stop', options: {} }]
+		return p
+	}
+	addGroup('timeline', 'Timeline & View', [
+		['timeline_zoom_in', buildButtonPreset('Timeline: Zoom In', 'ZOOM\nIN', '#0f766e', 'timeline_zoom_in')],
+		['timeline_zoom_out', buildButtonPreset('Timeline: Zoom Out', 'ZOOM\nOUT', '#0f766e', 'timeline_zoom_out')],
+		['timeline_zoom_fit', buildButtonPreset('Timeline: Fit', 'ZOOM\nFIT', '#115e59', 'timeline_zoom_fit')],
+		['view_go_live', buildButtonPreset('Go to Live view', 'LIVE\nVIEW', '#0369a1', 'go_live')],
+		['dial_zoom', dial('Dial: Timeline zoom', 'ZOOM\nDIAL', '#0f766e', 'timeline_zoom_out', 'timeline_zoom_in', 'timeline_zoom_fit')],
+	])
+	addGroup('scrub', 'Frame scrub', [
+		['scrub_hold_forward', holdFrames('Hold: Step forward', 'HOLD\n+FRAME', '#6366f1', 'next')],
+		['scrub_hold_back', holdFrames('Hold: Step back', 'HOLD\n-FRAME', '#6366f1', 'previous')],
+		['dial_frames', dial('Dial: Frame scrub', 'FRAME\nDIAL', '#4f46e5', 'previous_frame', 'next_frame')],
+		['dial_cues', dial('Dial: Cue by cue', 'CUE\nDIAL', '#1f6feb', 'previous_cue', 'next_cue')],
+	])
+
 	// ── TimeWarp (DVR) ──────────────────────────────────────────
 	// While scrubbing, the cue and seek buttons reuse the transport verbs.
 	addGroup('timewarp', 'TimeWarp', [

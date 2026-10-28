@@ -1,6 +1,6 @@
 {
   "name": "companion-module-showrevue-showrevue",
-  "version": "0.8.1",
+  "version": "1.0.0",
   "main": "src/main.js",
   "scripts": {
     "format": "prettier -w .",

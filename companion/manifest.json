@@ -5,7 +5,7 @@
   "name": "ShowRevue",
   "shortname": "showrevue",
   "description": "Control ShowRevue transport, looping, messaging, masking and overlay widgets over OSC, with live state feedback.",
-  "version": "0.8.1",
+  "version": "1.0.0",
   "license": "MIT",
   "repository": "git+https://github.com/Deanbau/RevuShow.git",
   "bugs": "https://github.com/Deanbau/RevuShow/issues",

@@ -29,7 +29,8 @@ For live feedback, also enable **Send feedback to Companion** in ShowRevue → *
 - Record / stop / play / pause
 - Cue and timecode navigation
 - Next / previous recording in the Library (stopped Playback only)
-- Frame stepping
+- Frame stepping, and **step frames while a button is held** (put it on the button down, with **Stop stepping frames** on the button up)
+- **Timeline zoom** (in, out, fit the whole recording) and **Go to Live view** without recording. These need ShowRevue 1.0 RC 3 or later; an older ShowRevue ignores them
 - Loop set/go/toggle/clear
 - Stage Display custom messages
 - Stage Display message presets
@@ -48,6 +49,8 @@ Drag any of these onto a button. Groups appear in this order on the Presets tab:
 - **Transport**: Record, Stop, Play, Pause. Record lights red while recording.
 - **Navigation**: next and previous cue, timecode segment, recording and note, forward and back, frame stepping.
 - **Loop**: set and go to in and out, toggle, enable, disable, stop, clear.
+- **Timeline & View**: zoom in, out and fit, Go to Live view, and a dial for timeline zoom.
+- **Frame scrub**: hold to step forward or back, and dials for frame by frame and cue by cue. A dial preset needs a surface with a rotary, such as a Stream Deck+; pressing the dial pauses.
 - **TimeWarp**: enter and exit the DVR, and scrub buttons.
 - **Show State**: Preshow, Acts 1 to 4, Intervals 1 to 3, Finished, Reset, next curtain and next show. Each phase button lights while the show is in that phase.
 - **Session**: the four session types, Start New, and next number 1.
